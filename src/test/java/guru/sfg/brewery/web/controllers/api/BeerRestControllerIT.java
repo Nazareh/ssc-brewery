@@ -25,4 +25,10 @@ public class BeerRestControllerIT extends BaseIT {
         mockMvc.perform(get("/api/v1/beer/b4467073-f329-4998-af3b-83cfa79f5923"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void findBeerByUpc() throws Exception{
+        mockMvc.perform(get("/api/v1/beerUpc/0631234200036"))
+                .andExpect(status().isOk());
+    }
 }
