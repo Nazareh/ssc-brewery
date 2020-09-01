@@ -35,7 +35,7 @@ public class BaseIT {
     @MockBean
     BeerService beerService;
 
-    MockMvc mockMvc;
+    public MockMvc mockMvc;
 
     @Value("${spring.security.user.name}")
     String user;
