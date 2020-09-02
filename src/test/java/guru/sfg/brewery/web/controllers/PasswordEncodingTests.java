@@ -13,45 +13,36 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.util.DigestUtils;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 public class PasswordEncodingTests {
-
-    static final String PASSWORD = "password";
-
 
     @Test
     void testBcrypt(){
         PasswordEncoder bcrypt = new BCryptPasswordEncoder();
-        System.out.println(bcrypt.encode(PASSWORD));
-        System.out.println(bcrypt.encode(PASSWORD));
+        System.out.println(bcrypt.encode("supersecret"));
     }
 
     @Test
     void testSha256(){
         PasswordEncoder sha256 = new StandardPasswordEncoder();
 
-        System.out.println(sha256.encode(PASSWORD));
-        System.out.println(sha256.encode(PASSWORD));
+        System.out.println(sha256.encode("password"));
     }
 
     @Test
     void testLdap(){
         PasswordEncoder ldap = new LdapShaPasswordEncoder();
-        String encodedPassword = ldap.encode(PASSWORD);
+        String encodedPassword = ldap.encode("tiger");
         System.out.println(encodedPassword);
-
-        assertTrue(ldap.matches(PASSWORD,encodedPassword));
     }
 
     @Test
     void testNoOp(){
         PasswordEncoder noOp = NoOpPasswordEncoder.getInstance();
-        System.out.println(noOp.encode(PASSWORD));
+        System.out.println(noOp.encode("PASSWORD"));
     }
 
     @Test
     void hashingExample() {
-        System.out.println(DigestUtils.md5DigestAsHex(PASSWORD.getBytes()));
+        System.out.println(DigestUtils.md5DigestAsHex("PASSWORD".getBytes()));
     }
 }
