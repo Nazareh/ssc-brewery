@@ -7,13 +7,14 @@ package guru.sfg.brewery.web.controllers.api;
 import guru.sfg.brewery.web.controllers.BaseIT;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@WebMvcTest
+@SpringBootTest
 public class BeerRestControllerIT extends BaseIT {
 
     @Test
@@ -27,15 +28,15 @@ public class BeerRestControllerIT extends BaseIT {
     @Test
     void deleteBeer() throws Exception {
         mockMvc.perform(delete("/api/v1/beer/b4467073-f329-4998-af3b-83cfa79f5923")
-                        .header("Api-Key", "admin")
-                        .header("Api-Secret", "supersecret"))
+                        .header("Api-Key", "spring")
+                        .header("Api-Secret", "guru"))
                 .andExpect(status().isOk());
     }
 
     @Test
     void deleteHttpBasic() throws Exception {
         mockMvc.perform(delete("/api/v1/beer/b4467073-f329-4998-af3b-83cfa79f5923")
-                        .with(httpBasic("admin","supersecret")))
+                        .with(httpBasic("spring","guru")))
                 .andExpect(status().is2xxSuccessful());
     }
 

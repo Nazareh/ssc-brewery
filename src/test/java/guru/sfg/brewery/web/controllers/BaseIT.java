@@ -37,12 +37,6 @@ public class BaseIT {
 
     public MockMvc mockMvc;
 
-    @Value("${spring.security.user.name}")
-    String user;
-
-    @Value("${spring.security.user.password}")
-    String password;
-
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders
