@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -49,27 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().sameOrigin();
     }
 
-
-    //this is currently the default  spring framework 5, only here to show what it is. Can safely be removed.,
     @Bean
     PasswordEncoder passwordEncoder(){
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-
-        auth.inMemoryAuthentication()
-                .withUser("admin")
-                .password("{bcrypt}$2a$10$5Zlm6Xj8pamn2qk78bkXI.Tq/SJNLNbg4rffDoHkgPIZWhA2KEhf2")
-                .roles("ADMIN")
-                .and()
-                .withUser("user")
-                .password("{sha256}a1351deccae5ccf828494ff5753b8921b8cc47a8050390fc5519bd7039da050f6242a9112ab5b693")
-                .roles("USER")
-                .and()
-                .withUser("scott")
-                .password("{ldap}{SSHA}2mpMJq27Vs2sZs4pGLSD3y2x5iHCxpxcwrrxIg==")
-                .roles("CUSTOMER");
     }
 }
