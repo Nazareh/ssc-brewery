@@ -17,21 +17,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class BreweryRestControllerIT extends BaseIT {
     @Test
-    void getHttpBasicUserRole() throws Exception {
+    void getBreweriesHttpBasicUserRole() throws Exception {
         mockMvc.perform(get("/brewery/api/v1/breweries")
                 .with(httpBasic("user","password")))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    void getHttpBasicCustomerRole() throws Exception {
+    void getBreweriesHttpBasicCustomerRole() throws Exception {
         mockMvc.perform(get("/brewery/api/v1/breweries")
                 .with(httpBasic("scott","tiger")))
                 .andExpect(status().is2xxSuccessful());
     }
 
     @Test
-    void getBreweryNoAuth() throws Exception {
+    void getBreweriesHttpBasicAdmin() throws Exception {
+        mockMvc.perform(get("/brewery/api/v1/breweries")
+                .with(httpBasic("spring","guru")))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void getBreweriesBreweryNoAuth() throws Exception {
         mockMvc.perform(delete("/brewery/api/v1/breweries"))
                 .andExpect(status().isUnauthorized());
     }
