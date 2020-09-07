@@ -13,7 +13,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -34,39 +36,42 @@ public class UserDataLoader implements CommandLineRunner {
     }
 
     private void loadSecurityData() {
+
+        User spring = userRepository.save(
+                User.builder().username("spring").password(bCrypt.encode("guru")).build());
+
+        User user = userRepository.save(
+                User.builder().username("user").password(bCrypt.encode("password")).build());
+
+        User scott = userRepository.save(
+                User.builder().username("scott").password(bCrypt.encode("tiger")).build());
+
+
+        Role adminRole = roleRepository.save(Role.builder().name("ADMIN").user(spring).build());
+        Role customerRole = roleRepository.save(Role.builder().name("CUSTOMER").user(scott).build());
+        Role userRole = roleRepository.save(Role.builder().name("USER").user(user).build());
+
         Authority createBeer = authorityRepository.save(Authority.builder().permission("beer.create").build());
         Authority readBeer = authorityRepository.save(Authority.builder().permission("beer.read").build());
         Authority updateBeer = authorityRepository.save(Authority.builder().permission("beer.update").build());
         Authority deleteBeer = authorityRepository.save(Authority.builder().permission("beer.delete").build());
 
-        Role adminRole = Role.builder().name("ADMIN").authorities(Set.of(createBeer, updateBeer, readBeer, deleteBeer)).build();
-        Role customerRole = Role.builder().name("CUSTOMER").authority(readBeer).build();
-        Role userRole = Role.builder().name("USER").authority(readBeer).build();
+        Authority createCustomer = authorityRepository.save(Authority.builder().permission("customer.create").build());
+        Authority readCustomer = authorityRepository.save(Authority.builder().permission("customer.read").build());
+        Authority updateCustomer = authorityRepository.save(Authority.builder().permission("customer.update").build());
+        Authority deleteCustomer = authorityRepository.save(Authority.builder().permission("customer.delete").build());
+
+        Authority createBrewery = authorityRepository.save(Authority.builder().permission("brewery.create").build());
+        Authority readBrewery = authorityRepository.save(Authority.builder().permission("brewery.read").build());
+        Authority updateBrewery = authorityRepository.save(Authority.builder().permission("brewery.update").build());
+        Authority deleteBrewery = authorityRepository.save(Authority.builder().permission("brewery.delete").build());
+
+        adminRole.setAuthorities(new HashSet<>(authorityRepository.findAll()));
+        customerRole.setAuthorities(new HashSet<>(Set.of(readBeer, readCustomer, readBrewery)));
+        userRole.setAuthorities(new HashSet<>(Set.of(readBeer)));
 
         roleRepository.saveAll(Arrays.asList(adminRole, customerRole, userRole));
 
-        userRepository.save(
-                User.builder()
-                        .username("spring")
-                        .password(bCrypt.encode("guru"))
-                        .role(adminRole)
-                        .build());
-
-        userRepository.save(
-                User.builder()
-                        .username("user")
-                        .password(bCrypt.encode("password"))
-                        .role(userRole)
-                        .build());
-
-        userRepository.save(
-                User.builder()
-                        .username("scott")
-                        .password(bCrypt.encode("tiger"))
-                        .role(customerRole)
-                        .build());
-
-        log.debug(userRepository.count() + " users created");
-
+        log.debug("Users Loaded: " + userRepository.count());
     }
 }

@@ -21,14 +21,15 @@ public class Role {
 
     private String name;
 
+    @Singular
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
 
     @Singular
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(name = "role_authority",
-            joinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_id", referencedColumnName = "id")})
+        joinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")},
+        inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
     private Set<Authority> authorities;
 
 }
