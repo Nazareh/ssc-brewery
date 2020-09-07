@@ -1,6 +1,3 @@
-/*
- * Created by Nazareh on 3/9/20, 8:06 pm
- */
 
 package guru.sfg.brewery.domain.security;
 
@@ -8,13 +5,17 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
+/*
+ * Created by Nazareh on 3/9/20, 8:06 pm
+ */
 @Setter
-@Entity
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
+@Entity
 public class User {
 
     @Id
@@ -25,11 +26,21 @@ public class User {
     private String password;
 
     @Singular
-    @ManyToMany(cascade = CascadeType.MERGE)
-    @JoinTable(name = "user_authority",
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_id", referencedColumnName = "id")})
+            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
+    private Set<Role> roles;
+
+    @Transient
     private Set<Authority> authorities;
+
+    public Set<Authority> getAuthorities() {
+        return this.roles.stream()
+                .map(Role::getAuthorities)
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
+    }
 
     @Builder.Default
     private Boolean accountNonExpired = true;

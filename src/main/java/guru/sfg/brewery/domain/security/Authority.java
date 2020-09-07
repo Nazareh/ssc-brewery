@@ -1,7 +1,3 @@
-/*
- * Created by Nazareh on 3/9/20, 8:08 pm
- */
-
 package guru.sfg.brewery.domain.security;
 
 import lombok.*;
@@ -9,20 +5,23 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.Set;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
+/*
+ * Created by Nazareh on 3/9/20, 8:08 pm
+ */
 @Setter
-@Entity
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
+@Entity
 public class Authority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private String role;
+    private String permission;
 
     @ManyToMany(mappedBy = "authorities")
-    private Set<User> users;
+    private Set<Role> roles;
 }
