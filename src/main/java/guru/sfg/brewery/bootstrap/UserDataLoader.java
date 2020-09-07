@@ -1,8 +1,10 @@
 package guru.sfg.brewery.bootstrap;
 
 import guru.sfg.brewery.domain.security.Authority;
+import guru.sfg.brewery.domain.security.Role;
 import guru.sfg.brewery.domain.security.User;
 import guru.sfg.brewery.repositories.security.AuthorityRepository;
+import guru.sfg.brewery.repositories.security.RoleRepository;
 import guru.sfg.brewery.repositories.security.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,77 +12,61 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.Set;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class UserDataLoader implements CommandLineRunner {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final AuthorityRepository authorityRepository;
     private final PasswordEncoder bCrypt;
-
-    private Authority ADMIN_ROLE;
-    private Authority CUSTOMER_ROLE;
-    private Authority USER_ROLE;
-
 
     @Override
     public void run(String... args) throws Exception {
 
-        if(authorityRepository.count() == 0){
+        if (userRepository.count() + authorityRepository.count() + roleRepository.count() == 0) {
             loadSecurityData();
         }
-
     }
 
     private void loadSecurityData() {
-        loadAuthorities();
-        loadUsers();
-    }
+        Authority createBeer = authorityRepository.save(Authority.builder().permission("beer.create").build());
+        Authority readBeer = authorityRepository.save(Authority.builder().permission("beer.read").build());
+        Authority updateBeer = authorityRepository.save(Authority.builder().permission("beer.update").build());
+        Authority deleteBeer = authorityRepository.save(Authority.builder().permission("beer.delete").build());
 
-    private void loadAuthorities(){
+        Role adminRole = Role.builder().name("ADMIN").authorities(Set.of(createBeer, updateBeer, readBeer, deleteBeer)).build();
+        Role customerRole = Role.builder().name("CUSTOMER").authority(readBeer).build();
+        Role userRole = Role.builder().name("USER").authority(readBeer).build();
 
-        if (authorityRepository.count() == 0 ) {
-            ADMIN_ROLE = authorityRepository.save(Authority.builder().role("ROLE_ADMIN").build());
-            USER_ROLE = authorityRepository.save(Authority.builder().role("ROLE_USER").build());
-            CUSTOMER_ROLE = authorityRepository.save(Authority.builder().role("ROLE_CUSTOMER").build());
-            log.debug(authorityRepository.count() + " roles created");
-        }
-    }
+        roleRepository.saveAll(Arrays.asList(adminRole, customerRole, userRole));
 
-    private void loadUsers(){
-        final String SPRING = "spring";
-        final String USER = "user";
-        final String SCOTT = "scott";
+        userRepository.save(
+                User.builder()
+                        .username("spring")
+                        .password(bCrypt.encode("guru"))
+                        .role(adminRole)
+                        .build());
 
-        if (userRepository.findByUsername(SPRING).isEmpty()) {
-            userRepository.save(
-                    User.builder()
-                            .username(SPRING)
-                            .password(bCrypt.encode("guru"))
-                            .authority(ADMIN_ROLE)
-                            .build());
-            log.debug(SPRING + " user created");
-        }
+        userRepository.save(
+                User.builder()
+                        .username("user")
+                        .password(bCrypt.encode("password"))
+                        .role(userRole)
+                        .build());
 
-        if (userRepository.findByUsername(USER).isEmpty()) {
-            userRepository.save(
-                    User.builder()
-                            .username(USER)
-                            .password(bCrypt.encode("password"))
-                            .authority(USER_ROLE)
-                            .build());
-            log.debug(USER + " user created");
-        }
+        userRepository.save(
+                User.builder()
+                        .username("scott")
+                        .password(bCrypt.encode("tiger"))
+                        .role(customerRole)
+                        .build());
 
-        if (userRepository.findByUsername(SCOTT).isEmpty()) {
-            userRepository.save(
-                    User.builder()
-                            .username(SCOTT)
-                            .password(bCrypt.encode("tiger"))
-                            .authority(CUSTOMER_ROLE)
-                            .build());
-            log.debug(SCOTT + " user created");
-        }
+        log.debug(userRepository.count() + " users created");
+
     }
 }
