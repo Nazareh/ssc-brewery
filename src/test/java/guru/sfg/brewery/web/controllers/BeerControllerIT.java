@@ -26,7 +26,7 @@ public class BeerControllerIT extends BaseIT {
     class InitNewForm {
 
         @ParameterizedTest(name = "Test {index} with [{arguments}]")
-        @MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamAllUsers")
+        @MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamAdminUsers")
         void initCreationFormAuth(String user, String password) throws Exception {
             mockMvc.perform(get("/beers/new").with(httpBasic(user, password)))
                     .andExpect(status().isOk())
