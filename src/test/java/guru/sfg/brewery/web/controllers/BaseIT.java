@@ -23,7 +23,7 @@ public class BaseIT {
     @Autowired
     WebApplicationContext webApplicationContext;
 
-    public MockMvc mockMvc;
+    protected MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
@@ -36,6 +36,19 @@ public class BaseIT {
     static Stream<Arguments> getStreamAllUsers() {
         return Stream.of(
                 Arguments.arguments("spring", "guru"),
+                Arguments.arguments("user", "password"),
+                Arguments.arguments("scott", "tiger")
+        );
+    }
+
+    static Stream<Arguments> getStreamAdminUsers() {
+        return Stream.of(
+                Arguments.arguments("spring", "guru")
+        );
+    }
+
+    static Stream<Arguments> getStreamNotAdminUsers() {
+        return Stream.of(
                 Arguments.arguments("user", "password"),
                 Arguments.arguments("scott", "tiger")
         );
