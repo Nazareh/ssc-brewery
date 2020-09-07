@@ -20,21 +20,6 @@ public class BaseIT {
     @Autowired
     WebApplicationContext webApplicationContext;
 
-    @MockBean
-    BeerRepository beerRepository;
-
-    @MockBean
-    BeerInventoryRepository beerInventoryRepository;
-
-    @MockBean
-    BreweryService breweryService;
-
-    @MockBean
-    CustomerRepository customerRepository;
-
-    @MockBean
-    BeerService beerService;
-
     public MockMvc mockMvc;
 
     @BeforeEach
