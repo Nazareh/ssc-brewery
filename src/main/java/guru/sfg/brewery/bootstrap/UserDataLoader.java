@@ -46,10 +46,9 @@ public class UserDataLoader implements CommandLineRunner {
         User scott = userRepository.save(
                 User.builder().username("scott").password(bCrypt.encode("tiger")).build());
 
-
-        Role adminRole = roleRepository.save(Role.builder().name("ADMIN").user(spring).build());
-        Role customerRole = roleRepository.save(Role.builder().name("CUSTOMER").user(scott).build());
-        Role userRole = roleRepository.save(Role.builder().name("USER").user(user).build());
+        Role adminRole = roleRepository.save(Role.builder().name("ADMIN").build());
+        Role customerRole = roleRepository.save(Role.builder().name("CUSTOMER").build());
+        Role userRole = roleRepository.save(Role.builder().name("USER").build());
 
         Authority createBeer = authorityRepository.save(Authority.builder().permission("beer.create").build());
         Authority readBeer = authorityRepository.save(Authority.builder().permission("beer.read").build());
@@ -70,8 +69,15 @@ public class UserDataLoader implements CommandLineRunner {
         customerRole.setAuthorities(new HashSet<>(Set.of(readBeer, readCustomer, readBrewery)));
         userRole.setAuthorities(new HashSet<>(Set.of(readBeer)));
 
+        spring.setRoles(new HashSet<>(Set.of(adminRole)));
+        scott.setRoles(new HashSet<>(Set.of(customerRole)));
+        user.setRoles(new HashSet<>(Set.of(userRole)));
+
+        userRepository.saveAll(Arrays.asList(spring, scott, user));
         roleRepository.saveAll(Arrays.asList(adminRole, customerRole, userRole));
 
         log.debug("Users Loaded: " + userRepository.count());
+        log.debug("Roles Loaded: " + roleRepository.count());
+        log.debug("Authorities Loaded: " + authorityRepository.count());
     }
 }
