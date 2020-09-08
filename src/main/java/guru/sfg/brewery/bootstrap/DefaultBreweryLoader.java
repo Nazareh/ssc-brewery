@@ -89,13 +89,13 @@ public class DefaultBreweryLoader implements CommandLineRunner {
                 .customerName(KEY_WEST_DISTRIBUTORS).apiKey(UUID.randomUUID()).build());
 
         User stPeteUser = userRepository.save(User.builder()
-                .username(STPETE_USER).password(bCrypt.encode("password")).customer(stPeteCustomer).build());
+                .username(STPETE_USER).password(bCrypt.encode("password")).customer(stPeteCustomer).role(customerRole).build());
 
         User dunedinUser = userRepository.save(User.builder()
-                .username(DUNEDIN_USER).password(bCrypt.encode("password")).customer(dunedinCustomer).build());
+                .username(DUNEDIN_USER).password(bCrypt.encode("password")).customer(dunedinCustomer).role(customerRole).build());
 
         User keyWestUser = userRepository.save(User.builder()
-                .username(KEYWEST_USER).password(bCrypt.encode("password")).customer(keyWestCustomer).build());
+                .username(KEYWEST_USER).password(bCrypt.encode("password")).customer(keyWestCustomer).role(customerRole).build());
 
         createOrder(stPeteCustomer);
         createOrder(dunedinCustomer);
