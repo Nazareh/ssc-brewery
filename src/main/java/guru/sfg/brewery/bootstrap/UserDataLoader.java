@@ -65,8 +65,26 @@ public class UserDataLoader implements CommandLineRunner {
         Authority updateBrewery = authorityRepository.save(Authority.builder().permission("brewery.update").build());
         Authority deleteBrewery = authorityRepository.save(Authority.builder().permission("brewery.delete").build());
 
-        adminRole.setAuthorities(new HashSet<>(authorityRepository.findAll()));
-        customerRole.setAuthorities(new HashSet<>(Set.of(readBeer, readCustomer, readBrewery)));
+        Authority createOrder = authorityRepository.save(Authority.builder().permission("order.create").build());
+        Authority readOrder = authorityRepository.save(Authority.builder().permission("order.read").build());
+        Authority updateOrder = authorityRepository.save(Authority.builder().permission("order.update").build());
+        Authority deleteOrder = authorityRepository.save(Authority.builder().permission("order.delete").build());
+        Authority createCustomerOrder = authorityRepository.save(Authority.builder().permission("customer.order.create").build());
+        Authority readCustomerOrder = authorityRepository.save(Authority.builder().permission("customer.order.read").build());
+        Authority updateCustomerOrder = authorityRepository.save(Authority.builder().permission("customer.order.update").build());
+        Authority deleteCustomerOrder = authorityRepository.save(Authority.builder().permission("customer.order.delete").build());
+
+        adminRole.setAuthorities(new HashSet<>(Set.of(
+                createBeer, readBeer, updateBeer, deleteBeer,
+                createCustomer, readCustomer, updateCustomer, deleteCustomer,
+                createBrewery, readBrewery, updateBrewery, deleteBrewery,
+                createOrder, readOrder, updateOrder, deleteOrder
+        )));
+        customerRole.setAuthorities(new HashSet<>(Set.of(
+                readBeer, readCustomer, readBrewery,
+                createCustomerOrder, readCustomerOrder, updateCustomerOrder, deleteCustomerOrder
+        )));
+
         userRole.setAuthorities(new HashSet<>(Set.of(readBeer)));
 
         spring.setRoles(new HashSet<>(Set.of(adminRole)));
