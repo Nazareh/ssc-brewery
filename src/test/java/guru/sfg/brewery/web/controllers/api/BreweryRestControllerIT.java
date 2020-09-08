@@ -39,7 +39,7 @@ public class BreweryRestControllerIT extends BaseIT {
 
     @Test
     void getBreweriesBreweryNoAuth() throws Exception {
-        mockMvc.perform(delete("/brewery/api/v1/breweries"))
+        mockMvc.perform(get("/brewery/api/v1/breweries"))
                 .andExpect(status().isUnauthorized());
     }
 }
