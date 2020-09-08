@@ -50,6 +50,10 @@ public class DefaultBreweryLoader implements CommandLineRunner {
     public static final String DUNEDIN_DISTRIBUTING = "Dunedin Distributing";
     public static final String KEY_WEST_DISTRIBUTORS = "Key West Distributors";
 
+    public static final String STPETE_USER = "stpete";
+    public static final String DUNEDIN_USER = "dunedin";
+    public static final String KEYWEST_USER = "keywest";
+
     public static final String BEER_1_UPC = "0631234200036";
     public static final String BEER_2_UPC = "0631234300019";
     public static final String BEER_3_UPC = "0083783375213";
@@ -85,13 +89,13 @@ public class DefaultBreweryLoader implements CommandLineRunner {
                 .customerName(KEY_WEST_DISTRIBUTORS).apiKey(UUID.randomUUID()).build());
 
         User stPeteUser = userRepository.save(User.builder()
-                .username("stpete").password(bCrypt.encode("password")).customer(stPeteCustomer).build());
+                .username(STPETE_USER).password(bCrypt.encode("password")).customer(stPeteCustomer).build());
 
         User dunedinUser = userRepository.save(User.builder()
-                .username("dunedin").password(bCrypt.encode("password")).customer(dunedinCustomer).build());
+                .username(DUNEDIN_USER).password(bCrypt.encode("password")).customer(dunedinCustomer).build());
 
         User keyWestUser = userRepository.save(User.builder()
-                .username("keywest").password(bCrypt.encode("password")).customer(keyWestCustomer).build());
+                .username(KEYWEST_USER).password(bCrypt.encode("password")).customer(keyWestCustomer).build());
 
         createOrder(stPeteCustomer);
         createOrder(dunedinCustomer);
