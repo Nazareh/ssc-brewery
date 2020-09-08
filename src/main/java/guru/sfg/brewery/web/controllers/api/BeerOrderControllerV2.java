@@ -1,25 +1,25 @@
 package guru.sfg.brewery.web.controllers.api;
 
-/*
- *   Created by Nazareh on 8/9/20
- */
-
 import guru.sfg.brewery.domain.security.User;
-import guru.sfg.brewery.security.permissions.BeerOrderCreatePermission;
-import guru.sfg.brewery.security.permissions.BeerOrderPickUpPermission;
 import guru.sfg.brewery.security.permissions.BeerOrderReadPermissionV2;
 import guru.sfg.brewery.services.BeerOrderService;
 import guru.sfg.brewery.web.model.BeerOrderDto;
 import guru.sfg.brewery.web.model.BeerOrderPagedList;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
-@RequestMapping("/api/v2/customers/orders")
+/*
+ *   Created by Nazareh on 8/9/20
+ */
+@Slf4j
+@RequestMapping("/api/v2/orders")
 @RestController
 @RequiredArgsConstructor
 public class BeerOrderControllerV2 {
@@ -47,11 +47,16 @@ public class BeerOrderControllerV2 {
     }
 
     @BeerOrderReadPermissionV2
-    @GetMapping("/{orderId}")
-    public BeerOrderDto getOrder(@AuthenticationPrincipal User user,
-                                 @PathVariable("orderId") UUID orderId) {
+    @GetMapping("{orderId}")
+    public BeerOrderDto getOrder(@PathVariable("orderId") UUID orderId){
+        BeerOrderDto beerOrderDto =  beerOrderService.getOrderById(orderId);
 
-        return null;
-        //  return beerOrderService.getOrderById(orderId);
+        if (beerOrderDto == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order Not Found");
+        }
+
+        log.debug("Found Order: " + beerOrderDto);
+
+        return beerOrderDto;
     }
 }
