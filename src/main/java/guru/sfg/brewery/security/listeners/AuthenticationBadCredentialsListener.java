@@ -5,6 +5,7 @@ package guru.sfg.brewery.security.listeners;
  */
 
 import guru.sfg.brewery.domain.security.LoginFailure;
+import guru.sfg.brewery.domain.security.User;
 import guru.sfg.brewery.repositories.security.LoginFailureRepository;
 import guru.sfg.brewery.repositories.security.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
@@ -45,6 +50,21 @@ public class AuthenticationBadCredentialsListener {
             }
             LoginFailure loginFailure = loginFailureRepository.save(builder.build());
             log.debug("Failure event:" + loginFailure.getId());
+
+            if (loginFailure.getUser() != null){
+                lockUserAccount(loginFailure.getUser());
+            }
+        }
+    }
+
+    private void lockUserAccount(User user) {
+        List<LoginFailure> loginFailureList = loginFailureRepository
+                .findAllByUserAndCreatedDateIsAfter(user, Timestamp.valueOf(LocalDateTime.now().minusDays(1)));
+
+        if(loginFailureList.size() > 3){
+            user.setAccountNonLocked(false);
+            userRepository.save(user);
+            log.debug(user.getUsername() + " username has been locked due to too many failed attempts");
         }
     }
 }
