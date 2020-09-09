@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -17,7 +18,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     //needed for use with Spring Data JPA SPel
     @Bean
-    public SecurityEvaluationContextExtension securityEvaluationContextExtension(){
+    public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
         return new SecurityEvaluationContextExtension();
     }
 
@@ -26,21 +27,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests(authorize -> authorize
                         .antMatchers("/h2-console/**").permitAll()
-                        .antMatchers("/", "/webjars/**", "/login","/resources/**").permitAll()
+                        .antMatchers("/", "/webjars/**", "/login", "/resources/**").permitAll()
                 )
                 .authorizeRequests()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .and()
+                .anyRequest().authenticated().and()
+                .formLogin(loginConfigurer -> loginConfigurer
+                        .loginProcessingUrl("/login")
+                        .loginPage("/").permitAll()
+                        .successForwardUrl("/")
+                        .defaultSuccessUrl("/"))
+                .logout(loginConfigurer -> loginConfigurer
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+                        .logoutSuccessUrl("/").permitAll())
                 .httpBasic().and()
-                .csrf().ignoringAntMatchers("/h2-console/**","/api/**");
+                .csrf().ignoringAntMatchers("/h2-console/**", "/api/**");
 
         http.headers().frameOptions().sameOrigin();
     }
 
     @Bean
-    PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
