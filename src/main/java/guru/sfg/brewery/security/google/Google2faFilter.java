@@ -24,10 +24,10 @@ import java.io.IOException;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class Google2faFilter extends GenericFilterBean {
 
     private final AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();
+    private final Google2faFailureHandler google2faFailureHandler = new Google2faFailureHandler();
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -43,15 +43,12 @@ public class Google2faFilter extends GenericFilterBean {
                 User user = (User) authentication.getPrincipal();
                 if(user.getUseGoogle2fa() && user.getGoole2faRequired()) {
                     log.debug("2FA Required");
-                    // todo add failure handler
+
+                    google2faFailureHandler.onAuthenticationFailure(request,response,null);
+                    return;
                 }
             }
         }
-
-
-
         filterChain.doFilter(request,response);
-
-
     }
 }
