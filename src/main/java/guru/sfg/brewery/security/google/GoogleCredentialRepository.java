@@ -20,13 +20,11 @@ public class GoogleCredentialRepository implements ICredentialRepository {
 
     private final UserRepository userRepository;
 
-
     @Override
     public String getSecretKey(String username) {
 
-        User user = userRepository.findByUsername(username).orElseThrow();
-
-        return user.getGoogle2faSecret();
+        return userRepository.findByUsername(username).orElseThrow()
+                .getGoogle2faSecret();
     }
 
     @Override
