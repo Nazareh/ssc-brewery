@@ -55,7 +55,7 @@ public class UserController {
             return "user/register2fa";
         }
 
-        savedUser.setUserGoogle2fa(true);
+        savedUser.setUseGoogle2fa(true);
         userRepository.save(savedUser);
 
         return "/index";
