@@ -42,24 +42,25 @@ public class UserController {
         model.addAttribute("googleurl",url);
 
         return "user/register2fa";
-
     }
 
     @PostMapping("/register2fa")
     public String confirm2fa(@RequestParam Integer verifyCode){
 
-        User savedUser = userRepository.findById(getUser().getId()).orElseThrow();
+        User user = getUser();
+
         log.debug("Entered Code is:" + verifyCode);
 
-        if (!googleAuthenticator.authorizeUser(savedUser.getUsername(),verifyCode)){
+        if (googleAuthenticator.authorizeUser(user.getUsername(), verifyCode)) {
+            User savedUser = userRepository.findById(user.getId()).orElseThrow();
+            savedUser.setUseGoogle2fa(true);
+            userRepository.save(savedUser);
+
+            return "/index";
+        } else {
+            // bad code
             return "user/register2fa";
         }
-
-        savedUser.setUseGoogle2fa(true);
-        userRepository.save(savedUser);
-
-        return "/index";
-
     }
 
     @GetMapping("/verify2fa")
@@ -68,17 +69,18 @@ public class UserController {
     }
 
     @PostMapping("/verify2fa")
-    public String verifyPost2fa(@RequestParam Integer verifyCode){
+    public String verifyPostOf2Fa(@RequestParam Integer verifyCode){
 
         User user = getUser();
 
-        if (!googleAuthenticator.authorizeUser(user.getUsername(),verifyCode)){
+        if (googleAuthenticator.authorizeUser(user.getUsername(), verifyCode)) {
+            ((User)SecurityContextHolder.getContext()
+                    .getAuthentication().getPrincipal()).setGoole2faRequired(false);
+
+            return "/index";
+        } else {
             return "user/verify2fa";
         }
-
-        user.setGoole2faRequired(false);
-        return "/index";
-
     }
 
     private User getUser() {

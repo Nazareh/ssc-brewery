@@ -35,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-//        http.addFilterBefore(google2faFilter, SessionManagementFilter.class);
+                http.addFilterBefore(google2faFilter, SessionManagementFilter.class);
 
         http
                 .authorizeRequests(authorize -> authorize

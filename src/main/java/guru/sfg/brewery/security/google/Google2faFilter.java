@@ -46,6 +46,7 @@ public class Google2faFilter extends GenericFilterBean {
 
         if(urlIs2fa.matches(request) || urlResource.matches(request) ||
                 staticResourceRequestMatcher.matcher(request).isMatch()){
+            filterChain.doFilter(request,response);
             return;
         }
 
